@@ -71,4 +71,18 @@ defmodule XmlTest do
 	# assert items == [{'msg', 'hello'}, {'msg2', 'fubar'}, {'msg', 'world'}]
 	assert items == [msg: 'hello', msg2: 'fubar', msg: 'world']
   end
+
+  test "parsing children of elements" do
+	[ul] = :xmerl_xpath.string('/html/body/ul', sample_xml)
+
+	items = xmlElement(ul, :content)
+	  |> Enum.filter(fn(x) ->
+		elem(x, 0) == :xmlElement
+	  end)
+	  |> Enum.map(fn(x) ->
+		Atom.to_char_list(xmlElement(x, :name))
+	  end)
+
+	assert items == ['li', 'li']
+  end
 end
